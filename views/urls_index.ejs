@@ -7,6 +7,21 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   <title>TinyApp</title>
+  <style>
+    .button {
+      border: 2px solid red;
+      background-color: white;
+      border-radius: 8px;
+      color: red;
+      padding: 7px 15px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 18px;
+      margin: 3px 2px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 
 <body>
@@ -25,9 +40,16 @@
           <tr>
             <td><%= url %></td>
             <td><%= urls[url] %></td>
+            <td>
+              <form method="POST" action='/urls/<%= url %>/delete'>
+              
+                <button class="button">Delete</button>
+
+              </form>
+            </td>
           </tr>
-        <% } %>
-      </tbody>
+          <% } %>
+        </tbody>
     </table>
   </main>
   <!-- Bootstrap JS -->
