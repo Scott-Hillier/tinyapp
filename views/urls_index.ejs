@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   <title>TinyApp</title>
   <style>
-    .button {
+    .redbutton {
       border: 2px solid red;
       background-color: white;
       border-radius: 8px;
@@ -20,6 +20,19 @@
       font-size: 18px;
       margin: 3px 2px;
       cursor: pointer;
+    }
+    .bluebutton{
+      border: 2px solid blue;
+      background-color: white;
+      color: blue;
+    }
+    .redbutton:hover {
+      background-color: rgb(255, 100, 100);
+      color: white;
+    }
+    .bluebutton:hover {
+      background-color: rgb(115, 100, 255);
+      color: white;
     }
   </style>
 </head>
@@ -33,6 +46,8 @@
         <tr>
           <th scope="col">Short URL</th>
           <th scope="col">Long URL</th>
+          <th scope="col">Edit</th>
+          <th scope="col">Delete</th>
         </tr>
       </thead>
       <tbody>
@@ -41,9 +56,16 @@
             <td><%= url %></td>
             <td><%= urls[url] %></td>
             <td>
+              <form method="POST" action='/urls/<%= url %>/edit'>
+              
+                <button class="redbutton bluebutton">Edit</button>
+
+              </form>
+            </td>
+            <td>
               <form method="POST" action='/urls/<%= url %>/delete'>
               
-                <button class="button">Delete</button>
+                <button class="redbutton">Delete</button>
 
               </form>
             </td>
