@@ -25,13 +25,13 @@
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        <a class="nav-item nav-link" href="/urls">My URLs</a>
-        <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
-      </div>
-    </div>
     <% if(!cookieLogin){ %>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-item nav-link" href="/urls">My URLs</a>
+          <a class="nav-item nav-link" href="/login-page">Create New URL</a>
+        </div>
+      </div>
       <form class="form-inline form-style" action="/login-page" method="GET">
         <button type="submit" class="button">Login</button>
       </form>
@@ -39,6 +39,12 @@
       <button type="submit" class="button">Register</button>
       </form>
         <% } else { %>  
+          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+              <a class="nav-item nav-link" href="/urls">My URLs</a>
+              <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+            </div>
+          </div>
           <form class="form-inline form-style" action="/logout" method="POST">
           <span style="display:block; color: rgba(0, 0, 0, 0.5); font-size: 20px; padding-right: 15px;"
           >Logged in as <%= users[cookie].email %></span>
