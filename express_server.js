@@ -3,9 +3,29 @@ const app = express();
 const PORT = 8080; // default port 8080
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
-
+const check = (thingToCheck, thing, users) => {
+  for (const user in users) {
+    if (users[user][thingToCheck] === thing) {
+      return true;
+    }
+  }
+  return false;
+};
 
 app.set("view engine", "ejs");
+
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+}
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -19,26 +39,28 @@ function generateRandomString() {
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
-
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
+app.get("/urls", (req, res) => {
+  const templateVars = {urls: urlDatabase, users: users, cookie: req.cookies["user_id"], cookieLogin: req.cookies["user_login"]};
+  res.render("urls_index", templateVars);
+});
+
+app.get("/register-page", (req, res) => {
+  const templateVars = {users: users, cookie: req.cookies["user_id"], cookieLogin: req.cookies["user_login"]};
+  res.render("urls_register", templateVars);
+});
+
+app.get("/login-page", (req, res) => {
+  const templateVars = {users: users, cookie: req.cookies["user_id"], cookieLogin: req.cookies["user_login"]};
+  res.render("urls_login", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = {username: req.cookies["username"]};
+  const templateVars = {users: users, cookie: req.cookies["user_id"], cookieLogin: req.cookies["user_login"]};
   res.render("urls_new", templateVars);
-});
-
-app.get("/urls", (req, res) => {
-  const templateVars = {urls: urlDatabase, username: req.cookies["username"]};
-  res.render("urls_index", templateVars);
 });
 
 app.post("/urls/new/submit", (req, res) => {
@@ -48,7 +70,7 @@ app.post("/urls/new/submit", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"]};
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], users: users, cookie: req.cookies["user_id"], cookieLogin: req.cookies["user_login"]};
   res.render("urls_show", templateVars);
 });
 
@@ -73,15 +95,38 @@ app.post("/urls/:shortURL", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
-app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
-  res.redirect('/urls');
+app.post("/logout", (req, res) => {
+  res.clearCookie("user_login");
+  res.redirect('/login-page');
 });
 
-app.post("/logout", (req, res) => {
-  res.clearCookie("username");
-  res.redirect('/urls');
+app.post("/login", (req, res) => {
+  if(req.body["email"] === '' || req.body["password"] === '') {
+    res.send('error status code 400');
+  } 
+  if (check('email', req.body["email"], users) === true && check('password', req.body["password"], users) === true) {
+    res.cookie('user_login', generateRandomString())
+    res.redirect('/urls');
+  } else {
+    res.send('error status code 403')
+  }
 });
+
+app.post("/register", (req, res) => {
+  if(req.body["email"] === '' || req.body["password"] === '' || check('email', req.body["email"], users) === true) {
+    res.send('error status code 400');
+  }
+  let newUser = generateRandomString();
+  res.cookie('user_id', newUser)
+  users[newUser] = {
+    id: newUser,
+    email: req.body["email"],
+    password: req.body["password"]
+  };
+  res.redirect("/login-page");
+});
+
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);

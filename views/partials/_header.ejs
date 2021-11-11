@@ -31,15 +31,17 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
     </div>
-    <% if(!username){ %>
-      <form class="form-inline form-style" action="/login" method="POST">
-        <input class="form-control" type="text" name="username" placeholder="username" style="width: 200px; margin: 1em">
+    <% if(!cookieLogin){ %>
+      <form class="form-inline form-style" action="/login-page" method="GET">
         <button type="submit" class="button">Login</button>
       </form>
-        <% } else{ %>  
+      <form class="form-inline form-style" action="/register-page" method="GET">
+      <button type="submit" class="button">Register</button>
+      </form>
+        <% } else { %>  
           <form class="form-inline form-style" action="/logout" method="POST">
           <span style="display:block; color: rgba(0, 0, 0, 0.5); font-size: 20px; padding-right: 15px;"
-          >Logged in as <%= username %></span>
+          >Logged in as <%= users[cookie].email %></span>
           <button type="sumbit" class="button">Logout</button>
           </form>
      <% } %>
