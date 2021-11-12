@@ -3,13 +3,15 @@ const app = express();
 const PORT = 8080; // default port 8080
 const cookieSession = require("cookie-session");
 const bcrypt = require("bcryptjs");
-const { getUserByEmail } = require("./helpers.js");
+const { getUserByEmail } = require("./helpers.js"); // Function used for getting user information from a given email
 app.use(
   cookieSession({
     name: "session",
     keys: ["key1", "key2"],
   })
 );
+
+// Used for verifying that emails are matching
 const check = (thingToCheck, thing, users) => {
   for (const user in users) {
     if (users[user][thingToCheck] === thing) {
@@ -21,6 +23,7 @@ const check = (thingToCheck, thing, users) => {
 
 app.set("view engine", "ejs");
 
+// Databases:
 const users = {};
 
 const urlDatabase = {};
@@ -36,6 +39,7 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+// Loads index page
 app.get("/urls", (req, res) => {
   const templateVars = {
     urls: urlDatabase,
@@ -46,16 +50,19 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+// Loads the registration page
 app.get("/register-page", (req, res) => {
   const templateVars = { users: users, cookie: req.session.user_id };
   res.render("urls_register", templateVars);
 });
 
+// Loads the login page
 app.get("/login-page", (req, res) => {
   const templateVars = { users: users, cookie: req.session.user_id };
   res.render("urls_login", templateVars);
 });
 
+// Loads the Create New URL page
 app.get("/urls/new", (req, res) => {
   const templateVars = {
     users: users,
@@ -65,6 +72,7 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
+// Generates the short URL and redirects to the index page
 app.post("/urls/new/submit", (req, res) => {
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = {
@@ -75,6 +83,7 @@ app.post("/urls/new/submit", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
+// Loads the Edit page
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
     shortURL: req.params.shortURL,
@@ -86,11 +95,13 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// Hyperlinks the short URLs
 app.get("/u/:shortURL", (req, res) => {
   const longURL = `http://${urlDatabase[req.params.shortURL].longURL}`;
   res.redirect(longURL);
 });
 
+// Deletes the saved URL if the creator is logged in
 app.post("/urls/:shortURL/delete", (req, res) => {
   if (req.session.user_id.id === urlDatabase[req.params.shortURL].userID) {
     delete urlDatabase[req.params.shortURL];
@@ -98,10 +109,12 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 });
 
+// Redirects to teh Edit page
 app.post("/urls/:shortURL/edit", (req, res) => {
   res.redirect(`/urls/${req.params.shortURL}`);
 });
 
+// Allows the creator of the URL to edit the chosen URL
 app.post("/urls/:shortURL", (req, res) => {
   if (req.session.user_id.id === urlDatabase[req.params.shortURL].userID) {
     urlDatabase[req.params.shortURL] = {
@@ -112,11 +125,13 @@ app.post("/urls/:shortURL", (req, res) => {
   res.redirect(`/urls/${req.params.shortURL}`);
 });
 
+// Logout and delete cookies
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/login-page");
 });
 
+// Verifies that the login information is correct, creates encrypted cookies, and brings the user to the index page
 app.post("/login", (req, res) => {
   const password = req.body.password;
   const email = req.body.email;
@@ -134,10 +149,11 @@ app.post("/login", (req, res) => {
     req.session.user_id = user.id;
     res.redirect("/urls");
   } else {
-    res.status(403).send("Error: email or password already exist");
+    res.status(403).send("Error: email or passwords do not match");
   }
 });
 
+// Allows the user to register on the website and verifies that the given url does not already exist
 app.post("/register", (req, res) => {
   if (
     req.body["email"] === "" ||
@@ -155,6 +171,7 @@ app.post("/register", (req, res) => {
   res.redirect("/login-page");
 });
 
+// Notifies that the server is listening and functioning
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
