@@ -46,7 +46,7 @@
   </head>
 
   <body>
-    <%- include('partials/_header') %> <% if (cookie) { %>
+    <%- include('partials/_header') %> <% if (user_id) { %>
     <main style="margin: 1em">
       <h3>My URLs</h3>
       <table class="table">
@@ -59,7 +59,7 @@
           </tr>
         </thead>
         <tbody>
-          <% if (cookie) { %> <% for(let url in urls) { %>
+          <% if (user_id) { %> <% for(let url in urls) { %>
           <tr>
             <td><a href="/u/<%= url %>"><%= url %></a></td>
             <td><%= urls[url].longURL %></td>

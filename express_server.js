@@ -44,21 +44,21 @@ app.get("/urls", (req, res) => {
   const templateVars = {
     urls: urlDatabase,
     users: users,
-    cookie: req.session.user_id,
+    user_id: req.session.user_id,
     email: users[req.session.user_id]?.email,
   };
   res.render("urls_index", templateVars);
 });
 
 // Loads the registration page
-app.get("/register-page", (req, res) => {
-  const templateVars = { users: users, cookie: req.session.user_id };
+app.get("/register", (req, res) => {
+  const templateVars = { users: users, user_id: req.session.user_id };
   res.render("urls_register", templateVars);
 });
 
 // Loads the login page
-app.get("/login-page", (req, res) => {
-  const templateVars = { users: users, cookie: req.session.user_id };
+app.get("/login", (req, res) => {
+  const templateVars = { users: users, user_id: req.session.user_id };
   res.render("urls_login", templateVars);
 });
 
@@ -66,8 +66,8 @@ app.get("/login-page", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const templateVars = {
     users: users,
-    cookie: req.session.user_id,
-    email: users[req.session.user_id]?.email,
+    user_id: req.session.user_id,
+    email: users[req.session.user_id].email,
   };
   res.render("urls_new", templateVars);
 });
@@ -77,8 +77,8 @@ app.post("/urls/new/submit", (req, res) => {
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = {
     longURL: req.body.longURL,
-    cookie: req.session.user_id,
-    email: users[req.session.user_id]?.email,
+    user_id: req.session.user_id,
+    email: users[req.session.user_id].email,
   };
   res.redirect(`/urls/${shortURL}`);
 });
@@ -89,8 +89,8 @@ app.get("/urls/:shortURL", (req, res) => {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL].longURL,
     users: users,
-    cookie: req.session.user_id,
-    email: users[req.session.user_id]?.email,
+    user_id: req.session.user_id,
+    email: users[req.session.user_id].email,
   };
   res.render("urls_show", templateVars);
 });
@@ -103,7 +103,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 // Deletes the saved URL if the creator is logged in
 app.post("/urls/:shortURL/delete", (req, res) => {
-  if (req.session.user_id.id === urlDatabase[req.params.shortURL].userID) {
+  if (req.session.user_id === urlDatabase[req.params.shortURL].user_id) {
     delete urlDatabase[req.params.shortURL];
   }
   res.redirect("/urls");
@@ -116,10 +116,11 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 
 // Allows the creator of the URL to edit the chosen URL
 app.post("/urls/:shortURL", (req, res) => {
-  if (req.session.user_id.id === urlDatabase[req.params.shortURL].userID) {
+  if (req.session.user_id === urlDatabase[req.params.shortURL].user_id) {
     urlDatabase[req.params.shortURL] = {
       longURL: req.body.longURL,
-      userID: req.session.user_id,
+      user_id: req.session.user_id,
+      email: users[req.session.user_id].email,
     };
   }
   res.redirect(`/urls/${req.params.shortURL}`);
@@ -128,7 +129,7 @@ app.post("/urls/:shortURL", (req, res) => {
 // Logout and delete cookies
 app.post("/logout", (req, res) => {
   req.session = null;
-  res.redirect("/login-page");
+  res.redirect("/login");
 });
 
 // Verifies that the login information is correct, creates encrypted cookies, and brings the user to the index page
@@ -168,7 +169,11 @@ app.post("/register", (req, res) => {
     email: req.body["email"],
     password: bcrypt.hashSync(req.body["password"], 10),
   };
-  res.redirect("/login-page");
+  res.redirect("/login");
+});
+
+app.get("/", (req, res) => {
+  res.redirect("/urls");
 });
 
 // Notifies that the server is listening and functioning

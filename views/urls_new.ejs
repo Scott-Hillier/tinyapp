@@ -19,7 +19,7 @@
   </head>
 
   <body>
-    <%- include('partials/_header') %> <% if (cookie) { %>
+    <%- include('partials/_header') %> <% if (user_id) { %>
     <main style="margin: 1em">
       <h3>Create TinyURL</h3>
       <form class="form-inline" action="/urls/new/submit" method="POST">
