@@ -64,6 +64,9 @@ app.get("/login", (req, res) => {
 
 // Loads the Create New URL page
 app.get("/urls/new", (req, res) => {
+  if (!req.session.user_id) {
+    res.redirect("/login");
+  }
   const templateVars = {
     users: users,
     user_id: req.session.user_id,
@@ -122,6 +125,8 @@ app.post("/urls/:shortURL", (req, res) => {
       user_id: req.session.user_id,
       email: users[req.session.user_id].email,
     };
+  } else {
+    res.send("Error: Cannot access URLs of other people");
   }
   res.redirect(`/urls/${req.params.shortURL}`);
 });
@@ -173,7 +178,7 @@ app.post("/register", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 // Notifies that the server is listening and functioning
