@@ -67,8 +67,6 @@ app.get("/urls", (req, res) => {
     user_id: req.session.user_id,
     email: users[req.session.user_id]?.email,
   };
-  console.log("URLDATABASE", urlDatabase);
-  console.log("REQ.PARAMS", req.session.user_id);
   res.render("urls_index", templateVars);
 });
 
@@ -109,10 +107,10 @@ app.post("/urls/new/submit", (req, res) => {
 });
 
 // Loads the Edit page
-app.get("/urls/:shortURL", (req, res) => {
+app.get("/urls/:id", (req, res) => {
   const templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL,
+    shortURL: req.params.id,
+    longURL: urlDatabase[req.params.id].longURL,
     users: users,
     user_id: req.session.user_id,
     email: users[req.session.user_id].email,
@@ -121,28 +119,28 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 // Hyperlinks the short URLs
-app.get("/u/:shortURL", (req, res) => {
-  const longURL = `http://${urlDatabase[req.params.shortURL].longURL}`;
+app.get("/u/:id", (req, res) => {
+  const longURL = `http://${urlDatabase[req.params.id].longURL}`;
   res.redirect(longURL);
 });
 
 // Deletes the saved URL if the creator is logged in
-app.post("/urls/:shortURL/delete", (req, res) => {
-  if (req.session.user_id === urlDatabase[req.params.shortURL].user_id) {
-    delete urlDatabase[req.params.shortURL];
+app.post("/urls/:id/delete", (req, res) => {
+  if (req.session.user_id === urlDatabase[req.params.id].user_id) {
+    delete urlDatabase[req.params.id];
   }
   res.redirect("/urls");
 });
 
 // Redirects to the Edit page
-app.post("/urls/:shortURL/edit", (req, res) => {
-  res.redirect(`/urls/${req.params.shortURL}`);
+app.post("/urls/:id/edit", (req, res) => {
+  res.redirect(`/urls/${req.params.id}`);
 });
 
 // Allows the creator of the URL to edit the chosen URL
-app.post("/urls/:shortURL", (req, res) => {
-  if (req.session.user_id === urlDatabase[req.params.shortURL].user_id) {
-    urlDatabase[req.params.shortURL] = {
+app.post("/urls/:id", (req, res) => {
+  if (req.session.user_id === urlDatabase[req.params.id].user_id) {
+    urlDatabase[req.params.id] = {
       longURL: req.body.longURL,
       user_id: req.session.user_id,
       email: users[req.session.user_id].email,
@@ -150,7 +148,7 @@ app.post("/urls/:shortURL", (req, res) => {
   } else {
     res.send("Error: Cannot access URLs of other people");
   }
-  res.redirect(`/urls/${req.params.shortURL}`);
+  res.redirect(`/urls/${req.params.id}`);
 });
 
 // Logout and delete cookies

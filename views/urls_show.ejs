@@ -23,7 +23,7 @@
       <div class="card-body">
         <h5 class="card-title">TinyURL for: <%= longURL %></h5>
         <p class="card-text">
-          Short URL: <a href="/u/<%= id %>"><%= shortURL %></a>
+          Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a>
         </p>
       </div>
 
@@ -31,7 +31,7 @@
         <h2>Edit</h2>
         <form
           class="form-inline form-style"
-          action="/urls/<%= user_id %>"
+          action="/urls/<%= shortURL %>"
           method="POST"
         >
           <div class="form-group mb-2">
