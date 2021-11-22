@@ -59,7 +59,8 @@
           </tr>
         </thead>
         <tbody>
-          <% if (user_id) { %> <% for(let url in urls) { %>
+          <% for(let url in urls) { %> <% if (user_id === urls[url].user_id) {
+          %>
           <tr>
             <td><a href="/u/<%= url %>"><%= url %></a></td>
             <td><%= urls[url].longURL %></td>

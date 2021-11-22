@@ -24,9 +24,29 @@ const check = (thingToCheck, thing, users) => {
 app.set("view engine", "ejs");
 
 // Databases:
-const users = {};
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
+};
 
-const urlDatabase = {};
+const urlDatabase = {
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
+};
 
 function generateRandomString() {
   return Math.random().toString(16).substr(2, 6);
@@ -47,6 +67,8 @@ app.get("/urls", (req, res) => {
     user_id: req.session.user_id,
     email: users[req.session.user_id]?.email,
   };
+  console.log("URLDATABASE", urlDatabase);
+  console.log("REQ.PARAMS", req.session.user_id);
   res.render("urls_index", templateVars);
 });
 
@@ -65,7 +87,7 @@ app.get("/login", (req, res) => {
 // Loads the Create New URL page
 app.get("/urls/new", (req, res) => {
   if (!req.session.user_id) {
-    res.redirect("/login");
+    res.send("Must be logged in to create a new URL");
   }
   const templateVars = {
     users: users,
@@ -112,7 +134,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 });
 
-// Redirects to teh Edit page
+// Redirects to the Edit page
 app.post("/urls/:shortURL/edit", (req, res) => {
   res.redirect(`/urls/${req.params.shortURL}`);
 });
