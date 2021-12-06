@@ -61,6 +61,9 @@ app.get("/urls.json", (req, res) => {
 
 // Loads index page
 app.get("/urls", (req, res) => {
+  if (!req.session.user_id) {
+    res.send("Please login to view URLs");
+  }
   const templateVars = {
     urls: urlDatabase,
     users: users,
@@ -108,6 +111,9 @@ app.post("/urls/new/submit", (req, res) => {
 
 // Loads the Edit page
 app.get("/urls/:id", (req, res) => {
+  if (!req.session.user_id) {
+    res.send("You do not have persmission to view this URL");
+  }
   const templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id].longURL,
@@ -148,7 +154,7 @@ app.post("/urls/:id", (req, res) => {
   } else {
     res.send("Error: Cannot access URLs of other people");
   }
-  res.redirect(`/urls/${req.params.id}`);
+  res.redirect(`/urls`);
 });
 
 // Logout and delete cookies
@@ -194,7 +200,7 @@ app.post("/register", (req, res) => {
     email: req.body["email"],
     password: bcrypt.hashSync(req.body["password"], 10),
   };
-  res.redirect("/login");
+  res.redirect("/urls");
 });
 
 app.get("/", (req, res) => {
