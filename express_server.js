@@ -200,6 +200,10 @@ app.post("/register", (req, res) => {
     email: req.body["email"],
     password: bcrypt.hashSync(req.body["password"], 10),
   };
+
+  const user = getUserByEmail(req.body["email"], users);
+  req.session.user_id = user.id;
+
   res.redirect("/urls");
 });
 
